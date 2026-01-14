@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gratitude Community</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --primary: #2a7a5f;
+            --primary-light: #3a8a6f;
+            --secondary: #f8f5f0;
+            --accent: #e9a35f;
+            --text: #333333;
+            --text-light: #666666;
+            --border: #e0e0e0;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --success: #2a7a5f;
+            --calendar-day: #f0f7f4;
+        }
+
+        body {
+            background-color: #fefefe;
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 15px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        nav a.active {
+            color: var(--primary);
+        }
+
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 3rem 1rem;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 4px 12px rgba(42, 122, 95, 0.2);
+        }
+
+        .cta-button:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        /* Today's Gratitude Section */
+        .today-section {
+            background-color: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 30px var(--shadow);
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title i {
+            font-size: 1.5rem;
+        }
+
+        .daily-prompt {
+            background-color: #f8f5f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--accent);
+        }
+
+        .prompt-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .prompt-text {
+            font-size: 1.2rem;
+            color: var(--text);
+            font-style: italic;
+        }
+
+        .gratitude-entry {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 1.5rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1.1rem;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .entry-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .char-count {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .char-count.near-limit {
+            color: #e74c3c;
+        }
+
+        .save-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .save-btn:hover {
+            background-color: var(--primary-light);
+        }
+
+        .save-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .saved-message {
+            color: var(--success);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .saved-message.show {
+            opacity: 1;
+        }
+
+        /* History Section */
+        .history-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .view-toggle {
+            display: flex;
+            background-color: #f0f0f0;
+            border-radius: 50px;
+            padding: 0.25rem;
+        }
+
+        .view-toggle button {
+            background: none;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .view-toggle button.active {
+            background-color: white;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .month-navigation {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .month-nav-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--primary);
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .month-nav-btn:hover {
+            background-color: #f0f7f4;
+        }
+
+        .current-month {
+            font-weight: 600;
+            color: var(--primary);
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .calendar-view {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .calendar-header {
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-light);
+            padding: 0.75rem 0;
+            font-size: 0.9rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            background-color: white;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .calendar-day:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow);
+        }
+
+        .calendar-day.has-entry {
+            background-color: var(--calendar-day);
+            border-color: var(--primary);
+        }
+
+        .calendar-day-number {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .calendar-day-entry {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        .list-view {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .history-entry {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 3px 10px var(--shadow);
+            border-left: 4px solid var(--primary);
+        }
+
+        .entry-date {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .entry-content {
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .no-entries {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        /* Community Wall */
+        .community-intro {
+            background-color: #f0f7f4;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .wall-entries {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .wall-entry {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .wall-entry:hover {
+            transform: translateY(-5px);
+        }
+
+        .wall-entry-content {
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .wall-entry-date {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            text-align: right;
+        }
+
+        .share-section {
+            background-color: #f8f5f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .share-note {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* About Page */
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .principles {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .principle-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px var(--shadow);
+            border-top: 4px solid var(--primary);
+        }
+
+        .principle-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .what-not {
+            background-color: #f8f5f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .what-not h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .what-not ul {
+            list-style-position: inside;
+            color: var(--text-light);
+        }
+
+        .what-not li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #2a2a2a;
+            color: white;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .footer-tagline {
+            color: #cccccc;
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .copyright {
+            color: #999999;
+            font-size: 0.9rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            nav ul {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: white;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 5px 15px var(--shadow);
+                z-index: 99;
+            }
+
+            nav ul.show {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .today-section, .history-section, .community-section {
+                padding: 1.5rem;
+            }
+
+            .calendar-view {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 0.25rem;
+            }
+
+            .calendar-header, .calendar-day {
+                font-size: 0.8rem;
+            }
+
+            .wall-entries {
+                grid-template-columns: 1fr;
+            }
+
+            .principles {
+                grid-template-columns: 1fr;
+            }
+
+            .entry-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .save-btn {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            main {
+                padding: 1rem;
+            }
+
+            .hero {
+                padding: 2rem 0.5rem;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .history-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .view-toggle {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-heart"></i>
+                <span>Gratitude Community</span>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav>
+                <ul id="navMenu">
+                    <li><a href="#" class="nav-link active" data-page="home">Home</a></li>
+                    <li><a href="#" class="nav-link" data-page="history">My Journal</a></li>
+                    <li><a href="#" class="nav-link" data-page="community">Community Wall</a></li>
+                    <li><a href="#" class="nav-link" data-page="about">About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Home Page -->
+        <section id="home-page" class="page active">
+            <div class="hero">
+                <h1>Daily Gratitude Practice</h1>
+                <p>A quiet space to cultivate gratitude, shift your attention from lack to awareness, and build a consistent daily ritual—without distractions or social pressure.</p>
+                <button class="cta-button" id="startPracticeBtn">
+                    <i class="fas fa-pen"></i> Start Today's Practice
+                </button>
+            </div>
+
+            <div class="today-section">
+                <h2 class="section-title">
+                    <i class="fas fa-calendar-day"></i> Today's Gratitude
+                </h2>
+                
+                <div class="daily-prompt">
+                    <div class="prompt-title">
+                        <i class="fas fa-lightbulb"></i> Today's Prompt
+                    </div>
+                    <div class="prompt-text" id="dailyPrompt">What supported you today without being noticed?</div>
+                </div>
+
+                <div class="gratitude-entry">
+                    <textarea 
+                        id="gratitudeText" 
+                        placeholder="What are you grateful for today? Write from the heart..."
+                        maxlength="500"></textarea>
+                    
+                    <div class="entry-actions">
+                        <div class="char-count" id="charCount">0/500</div>
+                        <div class="saved-message" id="savedMessage">
+                            <i class="fas fa-check-circle"></i> Saved
+                        </div>
+                        <button class="save-btn" id="saveBtn">
+                            <i class="fas fa-save"></i> Save Today's Gratitude
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="history-section">
+                <h2 class="section-title">
+                    <i class="fas fa-history"></i> Recent Entries
+                </h2>
+                
+                <div id="recentEntries" class="list-view">
+                    <!-- Recent entries will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- History/Journal Page -->
+        <section id="history-page" class="page">
+            <div class="history-section">
+                <h2 class="section-title">
+                    <i class="fas fa-book"></i> My Gratitude Journal
+                </h2>
+                
+                <div class="history-controls">
+                    <div class="view-toggle">
+                        <button class="view-toggle-btn active" data-view="calendar">Calendar</button>
+                        <button class="view-toggle-btn" data-view="list">List</button>
+                    </div>
+                    
+                    <div class="month-navigation">
+                        <button class="month-nav-btn" id="prevMonthBtn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="current-month" id="currentMonth">June 2023</div>
+                        <button class="month-nav-btn" id="nextMonthBtn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="calendarView" class="calendar-view">
+                    <!-- Calendar will be generated here -->
+                </div>
+                
+                <div id="listView" class="list-view" style="display: none;">
+                    <!-- List view will be loaded here -->
+                </div>
+                
+                <div id="noEntriesMessage" class="no-entries" style="display: none;">
+                    <i class="fas fa-book-open" style="font-size: 3rem; margin-bottom: 1rem; color: #ccc;"></i>
+                    <p>No gratitude entries yet. Start by writing your first entry on the Home page.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Community Wall Page -->
+        <section id="community-page" class="page">
+            <div class="community-section">
+                <h2 class="section-title">
+                    <i class="fas fa-users"></i> Community Gratitude Wall
+                </h2>
+                
+                <div class="community-intro">
+                    <p>This wall displays anonymous gratitude statements from our community. No names, no likes, no comparisons—just shared humanity.</p>
+                </div>
+                
+                <div class="wall-entries" id="wallEntries">
+                    <!-- Community entries will be loaded here -->
+                </div>
+                
+                <div class="share-section">
+                    <h3>Share to Community Wall (Anonymous)</h3>
+                    <textarea id="shareText" placeholder="Write something you're grateful for to share anonymously with the community (optional)" maxlength="200"></textarea>
+                    <div class="entry-actions">
+                        <div class="char-count" id="shareCharCount">0/200</div>
+                        <button class="save-btn" id="shareBtn">
+                            <i class="fas fa-share-alt"></i> Share Anonymously
+                        </button>
+                    </div>
+                    <p class="share-note">Note: Your entry will be visible to others but completely anonymous.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Page -->
+        <section id="about-page" class="page">
+            <div class="about-content">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle"></i> About This Space
+                </h2>
+                
+                <p>This is a minimal, calm digital space where individuals practice <strong>daily gratitude</strong> consistently, privately, and intentionally—without distractions, algorithms, or social pressure.</p>
+                
+                <div class="principles">
+                    <div class="principle-card">
+                        <div class="principle-title">
+                            <i class="fas fa-leaf"></i> Simplicity over features
+                        </div>
+                        <p>We believe in doing one thing well: helping you cultivate gratitude as a daily practice.</p>
+                    </div>
+                    
+                    <div class="principle-card">
+                        <div class="principle-title">
+                            <i class="fas fa-redo"></i> Consistency over intensity
+                        </div>
+                        <p>Small, daily practice creates more lasting change than occasional deep dives.</p>
+                    </div>
+                    
+                    <div class="principle-card">
+                        <div class="principle-title">
+                            <i class="fas fa-user-secret"></i> Privacy over performance
+                        </div>
+                        <p>This is your personal practice space. No social pressure, no public profiles.</p>
+                    </div>
+                    
+                    <div class="principle-card">
+                        <div class="principle-title">
+                            <i class="fas fa-mountain"></i> Depth over engagement
+                        </div>
+                        <p>We measure success by the quality of your practice, not by clicks or time spent.</p>
+                    </div>
+                </div>
+                
+                <div class="what-not">
+                    <h3>What This Is NOT</h3>
+                    <ul>
+                        <li>A social media platform</li>
+                        <li>A validation or comparison system</li>
+                        <li>A content consumption site</li>
+                        <li>A gamified habit tracker</li>
+                        <li>A funnel to sell you something</li>
+                    </ul>
+                </div>
+                
+                <p>This platform exists to convert <strong>passive inspiration into daily action</strong>. Gratitude is offered as a practice, not a solution. Build it slow, quiet, and disciplined.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fas fa-heart"></i>
+                Gratitude Community
+            </div>
+            <p class="footer-tagline">A daily ritual tool for grounding, reflection, and shifting attention from lack to awareness.</p>
+            <p class="copyright">© 2023 Gratitude Community. All data is stored locally in your browser.</p>
+        </div>
+    </footer>
+
+    <script>
+        // =====================
+        // DATA MANAGEMENT
+        // =====================
+        
+        // Sample gratitude prompts
+        const gratitudePrompts = [
+            "What supported you today without being noticed?",
+            "What small pleasure are you grateful for right now?",
+            "Who or what made today easier?",
+            "What did you learn recently that you're grateful for?",
+            "What about your body are you grateful for today?",
+            "What relationship in your life are you particularly thankful for?",
+            "What privilege do you have that you don't often acknowledge?",
+            "What challenge are you grateful for because it helped you grow?",
+            "What beauty did you witness today?",
+            "What skill or talent are you grateful to have?",
+            "What comfort are you thankful for?",
+            "What memory brings you gratitude when you recall it?",
+            "What aspect of nature are you grateful for today?",
+            "What made you smile or laugh today?",
+            "What opportunity are you grateful to have?"
+        ];
+        
+        // Sample community wall entries (pre-populated)
+        const sampleWallEntries = [
+            { text: "Grateful for the morning sunlight streaming through my window.", date: "2023-06-10" },
+            { text: "Thankful for a friend who listened without judgment.", date: "2023-06-09" },
+            { text: "Appreciating the quiet moments before the day begins.", date: "2023-06-08" },
+            { text: "Grateful for my health and the ability to move my body.", date: "2023-06-07" },
+            { text: "Thankful for fresh coffee and a new day.", date: "2023-06-06" },
+            { text: "Appreciating the kindness of strangers.", date: "2023-06-05" },
+            { text: "Grateful for books that transport me to other worlds.", date: "2023-06-04" },
+            { text: "Thankful for clean water and nourishing food.", date: "2023-06-03" },
+            { text: "Appreciating the lessons from difficult times.", date: "2023-06-02" },
+            { text: "Grateful for music that speaks to my soul.", date: "2023-06-01" }
+        ];
+        
+        // Initialize data storage
+        let userEntries = JSON.parse(localStorage.getItem('gratitudeEntries') || '[]');
+        let wallEntries = JSON.parse(localStorage.getItem('communityWall') || '[]');
+        
+        // If no wall entries in localStorage, initialize with samples
+        if (wallEntries.length === 0) {
+            wallEntries = sampleWallEntries;
+            localStorage.setItem('communityWall', JSON.stringify(wallEntries));
+        }
+        
+        // =====================
+        // UTILITY FUNCTIONS
+        // =====================
+        
+        // Format date as YYYY-MM-DD
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+        
+        // Format date for display
+        function formatDisplayDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+        
+        // Get today's date string
+        function getToday() {
+            return formatDate(new Date());
+        }
+        
+        // Get current prompt based on day of year
+        function getDailyPrompt() {
+            const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+            return gratitudePrompts[dayOfYear % gratitudePrompts.length];
+        }
+        
+        // Save user entry
+        function saveUserEntry(text) {
+            const today = getToday();
+            
+            // Check if entry for today already exists
+            const existingIndex = userEntries.findIndex(entry => entry.date === today);
+            
+            if (existingIndex >= 0) {
+                // Update existing entry
+                userEntries[existingIndex].text = text;
+                userEntries[existingIndex].updated = new Date().toISOString();
+            } else {
+                // Add new entry
+                userEntries.push({
+                    date: today,
+                    text: text,
+                    created: new Date().toISOString()
+                });
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('gratitudeEntries', JSON.stringify(userEntries));
+            
+            // Update UI
+            updateRecentEntries();
+            updateCalendar();
+            
+            return true;
+        }
+        
+        // Add to community wall
+        function addToCommunityWall(text) {
+            if (!text.trim()) return false;
+            
+            wallEntries.unshift({
+                text: text.trim(),
+                date: getToday()
+            });
+            
+            // Keep only last 50 entries
+            if (wallEntries.length > 50) {
+                wallEntries = wallEntries.slice(0, 50);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('communityWall', JSON.stringify(wallEntries));
+            
+            // Update UI
+            loadWallEntries();
+            
+            return true;
+        }
+        
+        // =====================
+        // UI UPDATE FUNCTIONS
+        // =====================
+        
+        // Update character count
+        function updateCharCount(textarea, counter) {
+            const length = textarea.value.length;
+            const maxLength = parseInt(textarea.getAttribute('maxlength'));
+            counter.textContent = `${length}/${maxLength}`;
+            
+            if (length > maxLength * 0.9) {
+                counter.classList.add('near-limit');
+            } else {
+                counter.classList.remove('near-limit');
+            }
+        }
+        
+        // Show saved message
+        function showSavedMessage() {
+            const savedMessage = document.getElementById('savedMessage');
+            savedMessage.classList.add('show');
+            setTimeout(() => {
+                savedMessage.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Update recent entries on home page
+        function updateRecentEntries() {
+            const recentEntriesContainer = document.getElementById('recentEntries');
+            
+            // Get last 3 entries (most recent first)
+            const recentEntries = [...userEntries]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 3);
+            
+            if (recentEntries.length === 0) {
+                recentEntriesContainer.innerHTML = `
+                    <div class="no-entries">
+                        <p>No entries yet. Write your first gratitude above!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            recentEntries.forEach(entry => {
+                const displayDate = formatDisplayDate(entry.date);
+                const previewText = entry.text.length > 150 
+                    ? entry.text.substring(0, 150) + '...' 
+                    : entry.text;
+                
+                html += `
+                    <div class="history-entry">
+                        <div class="entry-date">
+                            <i class="far fa-calendar"></i> ${displayDate}
+                        </div>
+                        <div class="entry-content">${previewText}</div>
+                    </div>
+                `;
+            });
+            
+            recentEntriesContainer.innerHTML = html;
+        }
+        
+        // Load community wall entries
+        function loadWallEntries() {
+            const wallEntriesContainer = document.getElementById('wallEntries');
+            
+            let html = '';
+            wallEntries.forEach(entry => {
+                const displayDate = formatDisplayDate(entry.date);
+                
+                html += `
+                    <div class="wall-entry">
+                        <div class="wall-entry-content">"${entry.text}"</div>
+                        <div class="wall-entry-date">${displayDate}</div>
+                    </div>
+                `;
+            });
+            
+            wallEntriesContainer.innerHTML = html;
+        }
+        
+        // =====================
+        // CALENDAR FUNCTIONS
+        // =====================
+        
+        let currentCalendarDate = new Date();
+        
+        // Generate calendar for a specific month
+        function generateCalendar(date) {
+            const calendarContainer = document.getElementById('calendarView');
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            
+            // Update current month display
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                                "July", "August", "September", "October", "November", "December"];
+            document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
+            
+            // Get first day of month and total days
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDay = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            
+            // Day names
+            const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            
+            // Clear calendar
+            calendarContainer.innerHTML = '';
+            
+            // Add day headers
+            dayNames.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-header';
+                dayElement.textContent = day;
+                calendarContainer.appendChild(dayElement);
+            });
+            
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < startingDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day empty';
+                calendarContainer.appendChild(emptyDay);
+            }
+            
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                
+                // Check if there's an entry for this day
+                const hasEntry = userEntries.some(entry => entry.date === dateStr);
+                
+                if (hasEntry) {
+                    dayElement.classList.add('has-entry');
+                    const entry = userEntries.find(entry => entry.date === dateStr);
+                    const preview = entry.text.length > 20 ? entry.text.substring(0, 20) + '...' : entry.text;
+                    
+                    dayElement.innerHTML = `
+                        <div class="calendar-day-number">${day}</div>
+                        <div class="calendar-day-entry">${preview}</div>
+                    `;
+                    
+                    // Add click event to view entry
+                    dayElement.addEventListener('click', () => {
+                        showEntryForDate(dateStr);
+                    });
+                } else {
+                    dayElement.innerHTML = `<div class="calendar-day-number">${day}</div>`;
+                }
+                
+                // Highlight today
+                const today = getToday();
+                if (dateStr === today) {
+                    dayElement.style.border = '2px solid var(--accent)';
+                }
+                
+                calendarContainer.appendChild(dayElement);
+            }
+            
+            // Update list view for current month
+            updateListViewForMonth(year, month);
+        }
+        
+        // Show entry for a specific date
+        function showEntryForDate(dateStr) {
+            const entry = userEntries.find(entry => entry.date === dateStr);
+            if (!entry) return;
+            
+            // Switch to list view
+            document.querySelector('[data-view="list"]').click();
+            
+            // Scroll to the entry (it will be in the list)
+            setTimeout(() => {
+                const entryElement = document.querySelector(`[data-date="${dateStr}"]`);
+                if (entryElement) {
+                    entryElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    entryElement.style.animation = 'pulse 1s';
+                    setTimeout(() => {
+                        entryElement.style.animation = '';
+                    }, 1000);
+                }
+            }, 100);
+        }
+        
+        // Update list view for a specific month
+        function updateListViewForMonth(year, month) {
+            const listViewContainer = document.getElementById('listView');
+            const noEntriesMessage = document.getElementById('noEntriesMessage');
+            
+            // Filter entries for the selected month
+            const monthEntries = userEntries.filter(entry => {
+                const entryDate = new Date(entry.date);
+                return entryDate.getFullYear() === year && entryDate.getMonth() === month;
+            }).sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Show/hide no entries message
+            if (monthEntries.length === 0) {
+                noEntriesMessage.style.display = 'block';
+                listViewContainer.innerHTML = '';
+            } else {
+                noEntriesMessage.style.display = 'none';
+                
+                let html = '';
+                monthEntries.forEach(entry => {
+                    const displayDate = formatDisplayDate(entry.date);
+                    
+                    html += `
+                        <div class="history-entry" data-date="${entry.date}">
+                            <div class="entry-date">
+                                <i class="far fa-calendar"></i> ${displayDate}
+                            </div>
+                            <div class="entry-content">${entry.text}</div>
+                        </div>
+                    `;
+                });
+                
+                listViewContainer.innerHTML = html;
+            }
+        }
+        
+        // Update calendar view
+        function updateCalendar() {
+            generateCalendar(currentCalendarDate);
+        }
+        
+        // =====================
+        // PAGE NAVIGATION
+        // =====================
+        
+        // Switch between pages
+        function switchPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(`${pageId}-page`).classList.add('active');
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-page') === pageId) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Close mobile menu if open
+            document.getElementById('navMenu').classList.remove('show');
+            
+            // Update page-specific content
+            if (pageId === 'history') {
+                updateCalendar();
+            } else if (pageId === 'community') {
+                loadWallEntries();
+            }
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+        
+        // =====================
+        // INITIALIZATION
+        // =====================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set daily prompt
+            document.getElementById('dailyPrompt').textContent = getDailyPrompt();
+            
+            // Load today's entry if it exists
+            const todayEntry = userEntries.find(entry => entry.date === getToday());
+            if (todayEntry) {
+                document.getElementById('gratitudeText').value = todayEntry.text;
+                updateCharCount(
+                    document.getElementById('gratitudeText'),
+                    document.getElementById('charCount')
+                );
+            }
+            
+            // Update recent entries
+            updateRecentEntries();
+            
+            // Load community wall
+            loadWallEntries();
+            
+            // Initialize calendar
+            generateCalendar(currentCalendarDate);
+            
+            // =====================
+            // EVENT LISTENERS
+            // =====================
+            
+            // Navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.getAttribute('data-page');
+                    switchPage(page);
+                });
+            });
+            
+            // Mobile menu toggle
+            document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+                document.getElementById('navMenu').classList.toggle('show');
+            });
+            
+            // Start practice button
+            document.getElementById('startPracticeBtn').addEventListener('click', function() {
+                document.getElementById('gratitudeText').focus();
+                window.scrollTo({
+                    top: document.getElementById('gratitudeText').offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Save gratitude entry
+            document.getElementById('saveBtn').addEventListener('click', function() {
+                const text = document.getElementById('gratitudeText').value.trim();
+                
+                if (!text) {
+                    alert('Please write something before saving.');
+                    return;
+                }
+                
+                if (saveUserEntry(text)) {
+                    showSavedMessage();
+                    document.getElementById('saveBtn').innerHTML = '<i class="fas fa-check"></i> Saved';
+                    document.getElementById('saveBtn').disabled = true;
+                    
+                    setTimeout(() => {
+                        document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save"></i> Save Today\'s Gratitude';
+                        document.getElementById('saveBtn').disabled = false;
+                    }, 2000);
+                }
+            });
+            
+            // Character count for gratitude text
+            const gratitudeText = document.getElementById('gratitudeText');
+            const charCount = document.getElementById('charCount');
+            
+            gratitudeText.addEventListener('input', function() {
+                updateCharCount(this, charCount);
+                document.getElementById('saveBtn').disabled = this.value.trim().length === 0;
+            });
+            
+            // Initialize save button state
+            document.getElementById('saveBtn').disabled = gratitudeText.value.trim().length === 0;
+            updateCharCount(gratitudeText, charCount);
+            
+            // Character count for share text
+            const shareText = document.getElementById('shareText');
+            const shareCharCount = document.getElementById('shareCharCount');
+            
+            shareText.addEventListener('input', function() {
+                updateCharCount(this, shareCharCount);
+                document.getElementById('shareBtn').disabled = this.value.trim().length === 0;
+            });
+            
+            // Share to community wall
+            document.getElementById('shareBtn').addEventListener('click', function() {
+                const text = document.getElementById('shareText').value.trim();
+                
+                if (!text) {
+                    alert('Please write something to share.');
+                    return;
+                }
+                
+                if (addToCommunityWall(text)) {
+                    document.getElementById('shareText').value = '';
+                    updateCharCount(shareText, shareCharCount);
+                    document.getElementById('shareBtn').disabled = true;
+                    
+                    // Show temporary confirmation
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> Shared!';
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                    }, 2000);
+                }
+            });
+            
+            // Initialize share button state
+            document.getElementById('shareBtn').disabled = shareText.value.trim().length === 0;
+            updateCharCount(shareText, shareCharCount);
+            
+            // Calendar navigation
+            document.getElementById('prevMonthBtn').addEventListener('click', function() {
+                currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+                updateCalendar();
+            });
+            
+            document.getElementById('nextMonthBtn').addEventListener('click', function() {
+                currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+                updateCalendar();
+            });
+            
+            // View toggle
+            document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Update active button
+                    document.querySelectorAll('.view-toggle-btn').forEach(b => {
+                        b.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Show selected view
+                    const view = this.getAttribute('data-view');
+                    if (view === 'calendar') {
+                        document.getElementById('calendarView').style.display = 'grid';
+                        document.getElementById('listView').style.display = 'none';
+                    } else {
+                        document.getElementById('calendarView').style.display = 'none';
+                        document.getElementById('listView').style.display = 'flex';
+                    }
+                });
+            });
+            
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(event) {
+                const navMenu = document.getElementById('navMenu');
+                const mobileBtn = document.getElementById('mobileMenuBtn');
+                
+                if (navMenu.classList.contains('show') && 
+                    !navMenu.contains(event.target) && 
+                    !mobileBtn.contains(event.target)) {
+                    navMenu.classList.remove('show');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
